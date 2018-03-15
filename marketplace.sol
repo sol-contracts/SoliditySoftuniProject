@@ -1,18 +1,18 @@
 pragma solidity ^0.4.21;
 
-contract IMarketplace {
-    function buy(bytes32 ID, uint quantity) public payable {}
+interface IMarketplace {
+    function buy(bytes32 ID, uint quantity) external payable;
     
-    function update(bytes32 ID, uint newQuantity) public {}
+    function update(bytes32 ID, uint newQuantity) external;
     
     //creates a new product and returns its ID
-    function newProduct(string name, uint price, uint quantity) public returns(bytes32) {}
+    function newProduct(string name, uint price, uint quantity) external returns(bytes32);
     
-    function getProduct(bytes32 ID) public view returns(string name, uint price, uint quantity) {}
+    function getProduct(bytes32 ID) external view returns(string name, uint price, uint quantity);
     
-    function getProducts() public view returns(bytes32[]) {}
+    function getProducts() external view returns(bytes32[]);
     
-    function getPrice(bytes32 ID, uint quantity) public view returns (uint) {}
+    function getPrice(bytes32 ID, uint quantity) external view returns (uint);
 }
 
 contract Marketplace is IMarketplace {
@@ -25,31 +25,31 @@ contract Marketplace is IMarketplace {
     bytes32[] productIndeces;
     function Marketplace() public {}
     
-    function buy(bytes32 ID, uint quantity) public payable {
+    function buy(bytes32 ID, uint quantity) external payable {
         ReduceProductQuantity(ID, quantity);
     }
     
-    function update(bytes32 ID, uint newQuantity) public {
+    function update(bytes32 ID, uint newQuantity) external {
         products[ID].quantity = newQuantity;
     }
 
      //creates a new product and returns its ID
-    function newProduct(string name, uint price, uint quantity) public returns(bytes32) {
+    function newProduct(string name, uint price, uint quantity) external returns(bytes32) {
         bytes32 productId = keccak256(name);
         products[productId] = Product(name, price, quantity);
         productIndeces.push(productId);
         return productId;
     }
     
-    function getProduct(bytes32 ID) public view returns(string name, uint price, uint quantity) {
+    function getProduct(bytes32 ID) external view returns(string name, uint price, uint quantity) {
         
     }
 
-    function getProducts() public view returns(bytes32[]) {
+    function getProducts() external view returns(bytes32[]) {
          return productIndeces;
     }
     
-    function getPrice(bytes32 ID, uint quantity) public view returns (uint) {
+    function getPrice(bytes32 ID, uint quantity) external view returns (uint) {
         return products[ID].price;
     }
     
