@@ -16,6 +16,7 @@ interface IMarketplace {
 }
 
 contract Marketplace is IMarketplace {
+    address owner;
     struct Product{
         string name;
         uint price;
@@ -23,18 +24,31 @@ contract Marketplace is IMarketplace {
     }
     mapping(bytes32=>Product) products;
     bytes32[] productIndeces;
-    function Marketplace() public {}
     
-    function buy(bytes32 ID, uint quantity) external payable {
+    modifier onlyOwner{
+        require(msg.sender==owner);
+        _;
+    }
+    modifier enoughStockEnoughFunds (bytes32 ID, uint quantity) {
+        require(products[ID].quantity>=quantity&&msg.value>=products[ID].price*quantity);
+_       ;
+        
+    }
+    function Marketplace() public {
+        owner=msg.sender;
+    }
+    
+    function buy(bytes32 ID, uint quantity) external payable enoughStockEnoughFunds(ID, quantity) {
         ReduceProductQuantity(ID, quantity);
     }
     
-    function update(bytes32 ID, uint newQuantity) external {
+    function update(bytes32 ID, uint newQuantity) external onlyOwner{
+        require(msg.sender==owner);
         products[ID].quantity = newQuantity;
     }
 
      //creates a new product and returns its ID
-    function newProduct(string name, uint price, uint quantity) external returns(bytes32) {
+    function newProduct(string name, uint price, uint quantity) external onlyOwner returns(bytes32) {
         bytes32 productId = keccak256(name);
         products[productId] = Product(name, price, quantity);
         productIndeces.push(productId);
@@ -42,7 +56,7 @@ contract Marketplace is IMarketplace {
     }
     
     function getProduct(bytes32 ID) external view returns(string name, uint price, uint quantity) {
-        
+        return (products[ID].name, products[ID].price, products[ID].quantity);
     }
 
     function getProducts() external view returns(bytes32[]) {
