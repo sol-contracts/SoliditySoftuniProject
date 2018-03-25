@@ -75,8 +75,7 @@ contract Marketplace is IMarketplace {
     }
     modifier enoughStockEnoughFunds (bytes32 ID, uint quantity) {
         require(products[ID].quantity>=quantity&&msg.value>=products[ID].price.mul(quantity));
-_       ;
-        
+        _;
     }
     function Marketplace() public {
         owner=msg.sender;
